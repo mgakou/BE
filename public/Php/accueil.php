@@ -15,7 +15,7 @@ if (!isset($_SESSION['utilisateur'])) {
 
 header("Location: ../Html/accueil.html");
 
-session_start();
+
 
 
 

@@ -19,7 +19,7 @@ try {
 
     if (count($infrastructures) > 0) {
         foreach ($infrastructures as $infrastructure) {
-            echo '<a href="projet.php?id=' . $infrastructure['id_infrastructure'] . '">' . htmlspecialchars($infrastructure['nom']) . '</a><br>';
+            echo '<a href="../Php/projet.php?id=' . $infrastructure['id_infrastructure'] . '">' . htmlspecialchars($infrastructure['nom']) . '</a><br>';
         }
     } else {
         echo "Aucun projet trouvé.";

@@ -3,12 +3,17 @@
 #ouvrir-projet {background-color: rgb(236, 247, 81);}
 #creer-projet {background-color: rgb(253, 42, 42);}
 
+#modifier-info {background-color: rgb(84, 196, 84);}
+#a-propos {background-color: rgb(101, 157, 221);}
+#ouvrir-projet {background-color: rgb(236, 247, 81);}
+#creer-projet {background-color: rgb(253, 42, 42);}
+#Supprimer-Projet {background-color: rgb(253, 42, 42);}
 
 .banniere {
     background-color: white;
     color : #2E7590;
     text-align: center;
-    font-family: Arial', sans-serif;
+    font-family: 'Arial', sans-serif;
     align-items: center;
     height: 120px;
     display: flex;
@@ -293,3 +298,4 @@ hr {
     text-decoration: none;
     cursor: pointer;
 }
+
