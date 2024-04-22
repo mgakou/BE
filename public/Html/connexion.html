@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - Net-Simulate</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../Css/connexion.css">
 </head>
 <body>
     <header>
         <div class="logo">
-            <img src="img/logo.jpeg" alt="Image Logo">
+            <img src="../Image/logo.jpeg" alt="Image Logo">
         </div>
         <div class="title">Net-Simulate</div>
     </header>
@@ -17,10 +17,10 @@
     <div class="container">
         <h2>Connexion</h2>
         <div class="login-box">
-            <!-- Modifiez ici l'attribut action pour pointer vers connexion.php -->
-            <form action="connexion.php" method="post">
+            <div id="errorMessage"></div>
+            <form action="../Php/connexion.php" method="post">
                 <div class="form-group">
-                    <label for="pseudo">Pseudo</label>
+                    <label for="pseudo">Mail</label>
                     <input type="text" id="pseudo" name="pseudo" placeholder="Pseudo" required>
                 </div>
                 <div class="form-group">
@@ -28,7 +28,7 @@
                     <input type="password" id="password" name="password" placeholder="Mot de passe" required>
                 </div>
                 <button type="submit">Se connecter</button>
-                <button type="button" onclick="location.href='inscription.html'">S'inscrire</button>
+                <button type="button" onclick="location.href='./Html/inscription.html'">S'inscrire</button>
             </form>
         </div>
     </div>

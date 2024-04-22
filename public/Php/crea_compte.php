@@ -18,15 +18,15 @@ try {
 
     // Vérif BD
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "<script>alert('Format de l'adresse e-mail invalide.'); window.location.href = 'inscription.html';</script>";
+        echo "<script>alert('Format de l'adresse e-mail invalide.'); window.location.href = '../Html/inscription.html';</script>";
     } elseif (!preg_match("/(?=.*[A-Z])(?=.*\W)/", $password)) {
-        echo "<script>alert('Le mot de passe ne respecte pas la nomenclature.'); window.location.href = 'inscription.html';</script>";
+        echo "<script>alert('Le mot de passe ne respecte pas la nomenclature.'); window.location.href = '../Html/inscription.html';</script>";
     } else {
         // Vérif email existant
         $checkEmail = $dbco->prepare("SELECT pseudo FROM utilisateur WHERE pseudo = ?");
         $checkEmail->execute([$email]);
         if ($checkEmail->rowCount() > 0) {
-            echo "<script>alert('Cette adresse e-mail est déjà utilisée.'); window.location.href = 'inscription.html';</script>";
+            echo "<script>alert('Cette adresse e-mail est déjà utilisée.'); window.location.href = '../Html/inscription.html';</script>";
         } else {
             // Hachage avec fonction PHP intégré
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
@@ -37,7 +37,7 @@ try {
             $stmt->execute([$email, $passwordHash]);
 
             // Message succées
-            echo "<script>alert('Compte créé avec succès !'); window.location.href = 'connexion.html';</script>";
+            echo "<script>alert('Compte créé avec succès !'); window.location.href = '../Html/connexion.html';</script>";
         }
     }
 } catch (PDOException $e) {

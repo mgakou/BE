@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+    <link rel="stylesheet" href="../Css/accueil.css">
+</head>
+<body>
+    <div class="banniere">
+        <img src="../Image/logo.jpeg" alt="logo" class="logo">
+        <p>Net-Simulate</p>
+    </div>
+
+    <hr>
+
+    <div class="titre">
+        <p>Accueil</p>
+    </div>
+  
+    <div class="button-container">
+        <button class="button" id="a-propos">À propos</button>
+        <button class="button" id="modifier-info">Modifier informations compte</button>
+        <button class="button" id="ouvrir-projet">Ouvrir projet</button>
+        <button class="button" id="creer-projet" onclick="document.getElementById('modal-projet').style.display='block'">Créer nouveau projet</button>
+        <button class="button" onclick="window.location.href='../Php/deconnexion.php'">Déconnexion</button>
+    </div>
+    
+    <!-- Encadré pour les informations de compte -->
+    <div class="info-compte">
+        <h3>Informations de compte</h3>
+    </div>
+
+    <!-- Modal pour la création d'un nouveau projet -->
+    <div id="modal-projet" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('modal-projet').style.display='none'">&times;</span>
+            <form action="../Php/creer_projet.php" method="post">
+                <label for="nomProjet">Nom du projet:</label>
+                <input type="text" id="nomProjet" name="nomProjet" required>
+                <button type="submit">Créer Projet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pour ouvrir les projets existants -->
+    <div id="modal-projets" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('modal-projets').style.display='none'">&times;</span>
+            <h2>Choisir un projet</h2>
+            <div id="liste-projets-modal">
+                <!-- Les projets seront ajoutés ici dynamiquement -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('ouvrir-projet').addEventListener('click', function() {
+            var modal = document.getElementById('modal-projets');
+            modal.style.display = 'block';
+            fetch('../Php/liste_projet.php')
+            .then(response => response.text())  // Utilisez response.text() si le PHP renvoie du HTML
+            .then(html => {
+                document.getElementById('liste-projets-modal').innerHTML = html;  // Mettez directement le HTML dans le modal
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des projets:', error);
+                document.getElementById('liste-projets-modal').innerHTML = '<p>Erreur lors du chargement des projets.</p>';
+            });
+        });
+    </script>
+    
+
+</body>
+</html>
