@@ -21,6 +21,7 @@ $dbname = "BE";
 $username = "postgres";
 $password = "Niktwo.3111";
 
+
 try {
     $connexion = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
     $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -89,4 +90,3 @@ try {
     </div>
 </body>
 </html>
-
