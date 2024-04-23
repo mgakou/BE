@@ -3,11 +3,8 @@
 #ouvrir-projet {background-color: rgb(236, 247, 81);}
 #creer-projet {background-color: rgb(253, 42, 42);}
 
-#modifier-info {background-color: rgb(84, 196, 84);}
-#a-propos {background-color: rgb(101, 157, 221);}
-#ouvrir-projet {background-color: rgb(236, 247, 81);}
-#creer-projet {background-color: rgb(253, 42, 42);}
-#Supprimer-Projet {background-color: rgb(253, 42, 42);}
+#supprimer-projet {background-color: rgb(242, 13, 13);}
+
 
 .banniere {
     background-color: white;
