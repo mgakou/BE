@@ -30,11 +30,13 @@ try {
     $stmt->bindParam(':idProjet', $idProjet, PDO::PARAM_INT);
     $stmt->execute();
     $projet = $stmt->fetch(PDO::FETCH_ASSOC);
-
     if (!$projet) {
         echo "Projet non trouvé.";
         exit;
     }
+
+    $_SESSION['idProjet'] = $idProjet;
+
 } catch (PDOException $e) {
     die("Erreur de connexion à la base de données : " . $e->getMessage());
 }
@@ -66,27 +68,28 @@ try {
 
     <div class="titre">
         <p>Informations du Projet<p>
-   
+        
     </div>
     <div class="button-container">
     <button class="button" id="supprimer-projet" onclick="supprimerProjet(<?php echo $idProjet; ?>)">Supprimer Projet</button>
     <button class="button" id="visualiser-projet" onclick="window.location.href='visualiser_projet.php?id=<?php echo $idProjet; ?>'">Visualiser Projet</button>
-    <button class="button" id="ouvrir-reseau" onclick="window.location.href='ouvrir_reseau.php?id=<?php echo $idProjet; ?>'">Ouvrir Réseau</button>
+    <button class="button" id="ouvrir-reseau" onclick="document.getElementById('modal-ouvrir-reseau').style.display='block'">Ouvrir Réseau</button>
     <button class="button" id="creer-reseau" onclick="document.getElementById('modal-creer-reseau').style.display='block'">Créer Nouveau Réseau</button>
     <button class="button" id="retour-accueil" onclick="window.location.href='accueil.php'">Retour à l'accueil</button>
-
     </div>
 
-    <!-- Modal pour la création d'un nouveau réseau -->
+
     <div id="modal-creer-reseau" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="document.getElementById('modal-creer-reseau').style.display='none'">&times;</span>
-            <form action="creer_reseau.php?id=<?php echo $idProjet; ?>" method="post">
-                <label for="nomReseau">Nom du réseau:</label>
-                <input type="text" id="nomReseau" name="nomReseau" required>
-                <button type="submit">Créer Réseau</button>
-            </form>
+                <span class="close" onclick="document.getElementById('modal-creer-reseau').style.display='none'">&times;</span>
+            <iframe src="creer_reseau.php?id=<?php echo $idProjet; ?>" style="width:100%; height:400px; border:none;"></iframe>
         </div>
     </div>
+
+
+
+</div>
+
+
 </body>
 </html>
