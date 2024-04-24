@@ -76,10 +76,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-<script>
+
+    <!--<script>
     var id_infrastructure = <?php echo json_encode($id_infrastructure); ?>;
     console.log("iciu:", id_infrastructure);
-</script>
+</script>-->
 
     <!-- Div pour centrer le formulaire -->
     <div class="form-container">

@@ -86,10 +86,35 @@ try {
         </div>
     </div>
 
-
+    
+    <!-- Modal pour ouvrir les reseax existants -->
+    <div id="modal-reseau" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('modal-reseau').style.display='none'">&times;</span>
+            <h2>Choisir un reseau</h2>
+            <div id="liste-reseau-modal">
+                <!-- Les projets seront ajoutés ici dynamiquement -->
+            </div>
+        </div>
+    </div>
 
 </div>
 
+<script>
+        document.getElementById('ouvrir-reseau').addEventListener('click', function() {
+            var modal = document.getElementById('modal-reseau');
+            modal.style.display = 'block';
+            fetch('./liste_reseau.php')
+            .then(response => response.text())  // Utilisez response.text() si le PHP renvoie du HTML
+            .then(html => {
+                document.getElementById('liste-reseau-modal').innerHTML = html;  // Mettez directement le HTML dans le modal
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des reseau:', error);
+                document.getElementById('liste-reseau-modal').innerHTML = '<p>Erreur lors du chargement des reseau.</p>';
+            });
+        });
+</script>
 
 </body>
 </html>
