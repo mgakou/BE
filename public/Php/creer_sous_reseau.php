@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Début de la transaction
         $conn->beginTransaction();
-
+        $idReseau = $_SESSION['idReseau'];
         // Insérer le sous-réseau dans la base de données
         $insert_sous_reseau_query = "INSERT INTO sous_réseau (mask, IP_Sous_Reseau, id_reseau) VALUES (?, ?, ?)";
         $stmt_insert_sous_reseau = $conn->prepare($insert_sous_reseau_query);
@@ -33,6 +33,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn->commit();
 
         $message = "Le sous-réseau a été créé avec succès.";
+        
+        
+        header("refresh:1.5;url=creer_sous_reseau.php?id=$idReseau");
+
+    
+          
     } catch (PDOException $e) {
         // En cas d'erreur, annuler la transaction et rapporter l'erreur
         $conn->rollBack();
@@ -73,12 +79,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <label for="id_reseau">ID du réseau :</label>
             <input type="number" id="id_reseau" name="id_reseau" value="<?php echo isset($_GET['id']) ? intval($_GET['id']) : ''; ?>"><br><br>
-
+            
             <input type="submit" value="Enregistrer le sous-réseau">
         </form>
 
         <?php if (!empty($message)): ?>
             <p><?php echo $message; ?></p>
+
         <?php endif; ?>
     </div>
 </body>

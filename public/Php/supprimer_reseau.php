@@ -25,7 +25,24 @@ try {
     $connexion = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
     $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Préparer et exécuter la requête pour supprimer le réseau
+    
+    $stmt = $connexion->prepare("SELECT id_sousréseau FROM sous_réseau WHERE id_reseau = :idReseau");
+    // et supprimer tous les pc de ces sous réseaux
+    $stmt->bindParam(':idReseau', $idReseau, PDO::PARAM_INT);
+    $stmt->execute();
+    $sousReseaux = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($sousReseaux as $sousReseau) {
+        $idSousReseau = $sousReseau['id_sousréseau'];
+        $stmt = $connexion->prepare("DELETE FROM Pc WHERE id_sousréseau = :idSousReseau");
+        $stmt->bindParam(':idSousReseau', $idSousReseau, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+   
+    $stmt = $connexion->prepare("DELETE FROM sous_réseau WHERE id_reseau = :idReseau");
+    $stmt->bindParam(':idReseau', $idReseau, PDO::PARAM_INT);
+    $stmt->execute();
+
+
     $stmt = $connexion->prepare("DELETE FROM réseau WHERE id_reseau = :idReseau");
     $stmt->bindParam(':idReseau', $idReseau, PDO::PARAM_INT);
     $stmt->execute();

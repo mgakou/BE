@@ -21,7 +21,6 @@ $dbname = "BE";
 $username = "postgres";
 $password = "Niktwo.3111";
 
-
 try {
     $connexion = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
     $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -56,6 +55,9 @@ try {
                 window.location.href = 'supprimer_projet.php?id=' + idProjet;
             }
         }
+        function ajouterRouteur() {
+            window.location.href = 'creer_routeur.php?id=<?php echo $idProjet; ?>';
+        }
     </script>
 </head>
 <body>
@@ -76,6 +78,7 @@ try {
     <button class="button" id="visualiser-projet" onclick="window.location.href='visualiser_projet.php?id=<?php echo $idProjet; ?>'">Visualiser Projet</button>
     <button class="button" id="ouvrir-reseau" onclick="document.getElementById('modal-ouvrir-reseau').style.display='block'">Ouvrir Réseau</button>
     <button class="button" id="creer-reseau" onclick="document.getElementById('modal-creer-reseau').style.display='block'">Créer Nouveau Réseau</button>
+    <button class="button" onclick="ajouterRouteur()">Ajouter Routeur</button>
     <button class="button" id="retour-accueil" onclick="window.location.href='accueil.php'">Retour à l'accueil</button>
     </div>
 

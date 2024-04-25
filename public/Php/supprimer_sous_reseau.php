@@ -25,10 +25,13 @@ try {
     $connexion = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
     $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Préparer et exécuter la requête pour supprimer le sous-réseau
-    $stmt = $connexion->prepare("DELETE FROM sous_réseau WHERE id_sousréseau = :idSousReseau");
+
+    $stmt = $connexion->prepare("DELETE FROM Pc WHERE id_sousréseau = :idSousReseau");
+    $stmt2 = $connexion->prepare("DELETE FROM sous_réseau WHERE id_sousréseau = :idSousReseau");
     $stmt->bindParam(':idSousReseau', $idSousReseau, PDO::PARAM_INT);
     $stmt->execute();
+    $stmt2->bindParam(':idSousReseau', $idSousReseau, PDO::PARAM_INT);
+    $stmt2->execute();
 
     // Vérifier si la suppression a été effectuée
     if ($stmt->rowCount() > 0) {
@@ -36,9 +39,10 @@ try {
     } else {
         $_SESSION['erreur'] = "Erreur lors de la suppression du sous-réseau.";
     }
-} catch (PDOException $e) {
+    
+} catch (PDOException $e) { //
     $_SESSION['erreur'] = "Erreur de connexion à la base de données : " . $e->getMessage();
-    header("Location: erreur.php"); // Assurez-vous que cette page existe pour gérer les erreurs.
+    header("Location: accueil.php"); // Assurez-vous que cette page existe pour gérer les erreurs.
     exit;
 }
 
