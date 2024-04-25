@@ -1,0 +1,150 @@
+.banniere {
+    background-color: white;
+    color : #2E7590;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    align-items: center;
+    height: 120px;
+    display: flex;
+    position: relative;
+}
+
+.banniere p {
+    margin-top: 50px;
+    font-size: 40px;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.logo {
+    position: absolute;
+    left: 20px;
+    width: 100px;
+    height: 100px;
+}
+
+.hr {
+    border : none;
+    height: 5px;
+    background-color: #2E7590;
+    margin : 0;
+}
+
+.titre {
+    text-align: center;
+    font-family: Roboto;
+    font-size: 25px;
+    font-weight: 700;
+
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0
+}
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+}
+
+.logo {
+    display: flex; /* Ajout */
+    align-items: center; /* Ajout */
+}
+
+.logo img {
+    width: 120px;
+    height: 113px;
+}
+
+.title {
+    font-size: 24px;
+    color: #2E7590;
+    text-align: center; /* Ajout */
+    flex-grow: 1; /* Ajout */
+}
+
+hr {
+    margin: 0;
+    border: none;
+    border-top: 3px solid #2E7590;
+}
+
+.form-container {
+    justify-content: center;
+    display: flex;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-top: 20px;
+    font-size: 20px;
+    font-family: Arial;
+    align-items: center;
+    height: 200px;
+    border: 2px solid #2E7590;
+}
+
+.form {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+button {
+    
+    background-color: #4b95b3; /* Rouge pour le bouton annuler */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+
+}
+
+
+.cancel-button {
+    background-color: #4b95b3; /* Rouge pour le bouton annuler */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 40px;
+    
+    
+}
+
+.cancel-button:hover {
+background-color: #a73234; 
+}
+
+
+input[type="text"] {
+   
+    width: 300px;
+    padding: 10px; 
+    margin: 0 auto; 
+    display: block;
+    
+}
+
+.form-message {
+    font-size: small;
+    margin-top: 20px; 
+    text-align: center; 
+    color: #4CAF50; 
+}

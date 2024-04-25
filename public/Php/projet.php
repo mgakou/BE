@@ -32,6 +32,7 @@ try {
     $projet = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$projet) {
         echo "Projet non trouvé.";
+        header("Location: accueil.php");
         exit;
     }
 
