@@ -72,7 +72,7 @@ try {
 
     <div class="button-container">
         <button class="button" id="supprimer-reseau" onclick="supprimerReseau(<?php echo $idReseau; ?>)">Supprimer Réseau</button>
-        <button class="button" id="visualiser-reseau" onclick="window.location.href='visualiser_reseau.php?id=<?php echo $idReseau; ?>'">Visualiser Réseau</button>
+        <button class="button" id="Connecter réseau - routeur" onclick="window.location.href='connecter_reseau.php?id=<?php echo $idReseau; ?>'">Connecter_reseau</button>
         <button class="button" id="ouvrir-sous-reseau" onclick="document.getElementById('modal-ouvrir-sous-reseau').style.display='block'">Ouvrir Sous Réseau</button>
         <button class="button" id="ajouter-sous-reseau" onclick="document.getElementById('modal-ajouter-sous-reseau').style.display='block'">Ajouter Sous-Réseau</button>
         <button class="button" id="retour-projet" onclick="window.location.href='projet.php?id=<?php echo $_SESSION['idProjet']; ?>'">Retour au Projet</button>

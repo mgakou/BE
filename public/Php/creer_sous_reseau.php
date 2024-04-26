@@ -1,50 +1,56 @@
 <?php
 session_start();
+require_once 'fonction_adresse.php';  
 
-// Informations de connexion à la base de données
+
 $host = 'localhost';
 $dbname = 'BE';
 $username = 'postgres';
 $password = 'Niktwo.3111';
 
-// Vérification de la soumission du formulaire
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
-        // Connexion à la base de données avec PDO
+        
         $conn = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
-
-        // Configuration de PDO pour rapporter les erreurs
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Récupérer les données du formulaire
+       
         $mask_sous_reseau = $_POST['mask_sous_reseau'];
         $ip_sous_reseau = $_POST['ip_sous_reseau'];
         $id_reseau = $_POST['id_reseau'];
 
-        // Début de la transaction
+      
         $conn->beginTransaction();
-        $idReseau = $_SESSION['idReseau'];
-        // Insérer le sous-réseau dans la base de données
-        $insert_sous_reseau_query = "INSERT INTO sous_réseau (mask, IP_Sous_Reseau, id_reseau) VALUES (?, ?, ?)";
-        $stmt_insert_sous_reseau = $conn->prepare($insert_sous_reseau_query);
-        $stmt_insert_sous_reseau->execute([$mask_sous_reseau, $ip_sous_reseau, $id_reseau]);
 
-        // Valider la transaction
-        $conn->commit();
-
-        $message = "Le sous-réseau a été créé avec succès.";
         
-        
-        header("refresh:1.5;url=creer_sous_reseau.php?id=$idReseau");
+        $stmt = $conn->prepare("SELECT adresse_réseau FROM réseau WHERE id_reseau = ?");
+        $stmt->execute([$id_reseau]);
+        $adresse_reseau = $stmt->fetchColumn();
 
-    
-          
+        if (!$adresse_reseau) {
+            $message ="L'ID réseau spécifié ne correspond à aucun réseau existant.";
+        }
+
+        if (masqueValide($mask_sous_reseau) && AdresseIPValideSousReseau($adresse_reseau, $mask_sous_reseau, $ip_sous_reseau)) {
+            $insert_sous_reseau_query = "INSERT INTO sous_réseau (mask, IP_Sous_Reseau, id_reseau) VALUES (?, ?, ?)";
+            $stmt_insert_sous_reseau = $conn->prepare($insert_sous_reseau_query);
+            $stmt_insert_sous_reseau->execute([$mask_sous_reseau, $ip_sous_reseau, $id_reseau]);
+            $message = "Sous réseau ajouté avec succès ! ";
+            $conn->commit();
+        } else {
+            $message = "Échec de l'ajout du sous-réseau. Le masque et/ou l'adresse IP invalide(s).";
+            $conn->rollBack();
+        }
     } catch (PDOException $e) {
-        // En cas d'erreur, annuler la transaction et rapporter l'erreur
         $conn->rollBack();
-        $message = "Erreur : " . $e->getMessage();
+        //$message = "Erreur : " . $e->getMessage();
+        $message = "Erreur champs";
+    } catch (Exception $e) {
+        $conn->rollBack();
+        $message = $e->getMessage();
     } finally {
-        // Fermer la connexion
+       
         $conn = null;
     }
 }

@@ -1,0 +1,96 @@
+.banniere {
+    background-color: white;
+    color : #2E7590;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    align-items: center;
+    height: 120px;
+    display: flex;
+    position: relative;
+}
+
+.banniere p {
+    margin-top: 50px;
+    font-size: 40px;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+}
+
+/* Réinitialisation de certains styles par défaut du navigateur */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Style du logo */
+.logo {
+    position: absolute;
+    left: 20px;
+    width: 100px;
+    height: 100px;
+}
+
+/* Style pour la barre horizontale */
+hr {
+    margin: 0;
+    border: none;
+    border-top: 3px solid #2E7590;
+}
+
+/* Styles pour les titres dans la page */
+.titre {
+    text-align: center;
+    font-family: Roboto;
+    font-size: 25px;
+    font-weight: 700;
+
+}
+
+/* Container principal du formulaire */
+.form-container {
+    justify-content: center;
+    display: flex;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-top: 20px;
+    font-size: 20px;
+    font-family: Arial;
+    align-items: center;
+    height: 350px;
+    border: 2px solid #2E7590;
+}
+
+/* Style des éléments de formulaire */
+.form-group {
+    margin-bottom: 20px;
+    width: 80%;
+}
+
+/* Style des inputs et selects */
+input[type="text"], select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Boutons */
+button, .cancel-button {
+    background-color: #4b95b3;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+
+/* Hover effect pour le bouton annuler */
+.cancel-button:hover {
+    background-color: #a73234;
+}

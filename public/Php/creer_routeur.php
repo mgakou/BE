@@ -71,7 +71,7 @@ if (isset($_SESSION['idProjet']) && isset($_SESSION['id_utilisateur'])) {
         <div class="form-group">
             <button type="submit" class="submit-button">Ajouter Routeur</button>
         
-            <a href="../PHP/accueil.php" type="button" class="cancel-button">Annuler</a>
+            <a href="../PHP/projet.php" type="button" class="cancel-button">Annuler</a>
 
             <?php if ($message != "") : ?>
                 <div class="form-message">

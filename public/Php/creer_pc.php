@@ -1,7 +1,8 @@
 <?php
 session_start();
+require_once 'fonction_adresse.php';
 
-// Vérification des prérequis de session
+
 if (!isset($_SESSION['id_utilisateur']) || !isset($_SESSION['ipsousreseau'])) {
     header("Location: connexion.html");
     exit;
@@ -34,24 +35,21 @@ try {
     die("Erreur de connexion à la base de données : " . $e->getMessage());
 }
 
-$message = "";
+$adressesousreseau = "SELECT ip_sous_reseau FROM sous_réseau WHERE id_sousréseau := id_sousreseau";
+$mask = "SELECT mask FROM sous_réseau WHERE id_sousréseau := id_sousreseau";
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ip_pc = $_POST['ip_pc'];
-    // Enregistrement d'un nouveau PC dans le sous-réseau
-    $insertStmt = $pdo->prepare("INSERT INTO Pc (IP_Pc, id_sousréseau) VALUES (?, ?)");
-    if ($insertStmt->execute([$ip_pc, $idSousReseau])) {
-        // je voudrais un message de réussite affiché pendant 3 secondes
 
-        $message = "PC ajouté avec succès.";
-        echo "<script>alert('Pc ajouté'); window.location.href = './sous_reseau.php?id=$idSousReseau';</script>";
-       
-
-
-
-       
-
+    if (AdresseIPValidePC($ip_pc, $sousReseau['ip_sous_reseau'], $sousReseau['mask'])) {
+        $insertStmt = $pdo->prepare("INSERT INTO Pc (IP_Pc, id_sousréseau) VALUES (?, ?)");
+        if ($insertStmt->execute([$ip_pc, $idSousReseau])) {
+            echo "<script>alert('PC ajouté .'); window.location.href = './sous_reseau.php?id=$idSousReseau';</script>";
+        } else {
+            echo "<script>alert('Erreur ajout PC .'); window.location.href = './sous_reseau.php?id=$idSousReseau';</script>";
+        }
     } else {
-        $message = "Erreur lors de l'ajout du PC: " . $insertStmt->errorInfo()[2];
+        echo "<script>alert('Adresse PC non valide .'); window.location.href = './sous_reseau.php?id=$idSousReseau';</script>";
     }
 }
 ?>
@@ -94,12 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>   
         </form>
         
-        <!-- Affichage des messages d'erreur ou de succès -->
-        <?php if (!empty($message)): ?>
-            <div class="form-message">
-                <?php echo htmlspecialchars($message); ?>
-            </div>
-        <?php endif; ?>
+        
     </div>
 </body>
 </html>

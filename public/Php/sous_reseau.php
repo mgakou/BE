@@ -56,9 +56,13 @@ $_SESSION['ipsousreseau'] = $sousReseau['ip_sous_reseau'];
             window.location.href = 'creer_pc.php?id=<?php echo $idSousReseau; ?>';
         }
 
+        function creer_lien_pc_routeur() {
+            window.location.href = 'creer_lien_pc_routeur.php?id=<?php echo $idSousReseau; ?>';
+        }
         function retourAuReseau() {
             window.location.href = 'reseau.php?id=<?php echo $sousReseau['id_reseau']; ?>';
         }
+        
     </script>
 </head>
 <body>
@@ -77,6 +81,7 @@ $_SESSION['ipsousreseau'] = $sousReseau['ip_sous_reseau'];
         <button class="button" onclick="supprimerSousReseau()">Supprimer Sous-Réseau</button>
         <button class="button" onclick="visualiserSousReseau()">Visualiser Sous-Réseau</button>
         <button class="button" onclick="ajouterPc()">Ajouter PC</button>
+        <button class="button" onclick="creer_lien_pc_routeur()">Connecter un PC à un Routeur</button>
         <button class="button" onclick="retourAuReseau()">Retour au Réseau</button>
     </div>
     

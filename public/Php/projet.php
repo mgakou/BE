@@ -58,6 +58,12 @@ try {
         function ajouterRouteur() {
             window.location.href = 'creer_routeur.php?id=<?php echo $idProjet; ?>';
         }
+        function connecterRouteur() {
+            window.location.href = 'creer_lien_routeur_routeur.php?id=<?php echo $idProjet; ?>';
+        }
+        function ConnecterPcRouteur() {
+            window.location.href = 'creer_lien_pc_routeur.php';
+        }
     </script>
 </head>
 <body>
@@ -79,6 +85,8 @@ try {
     <button class="button" id="ouvrir-reseau" onclick="document.getElementById('modal-ouvrir-reseau').style.display='block'">Ouvrir Réseau</button>
     <button class="button" id="creer-reseau" onclick="document.getElementById('modal-creer-reseau').style.display='block'">Créer Nouveau Réseau</button>
     <button class="button" onclick="ajouterRouteur()">Ajouter Routeur</button>
+    <button class="button" onclick="connecterRouteur()">Connecter un Routeur à un Routeur</button>
+    <button class="button" onclick="ConnecterPcRouteur()">Connecter un Pc à un Routeur</button>
     <button class="button" id="retour-accueil" onclick="window.location.href='accueil.php'">Retour à l'accueil</button>
     </div>
 
@@ -97,7 +105,6 @@ try {
             <span class="close" onclick="document.getElementById('modal-reseau').style.display='none'">&times;</span>
             <h2>Choisir un reseau</h2>
             <div id="liste-reseau-modal">
-                <!-- Les projets seront ajoutés ici dynamiquement -->
             </div>
         </div>
     </div>
