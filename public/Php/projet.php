@@ -56,7 +56,7 @@ try {
             window.location.href = 'creer_routeur.php?id=<?php echo $idProjet; ?>';
         }
         function connecterRouteur() {
-            window.location.href = 'accueil.php?id=<?php echo $idProjet; ?>';
+            window.location.href = 'creer_lien_routeur_routeur.php?id=<?php echo $idProjet; ?>';
         }
         function ConnecterPcRouteur() {
             window.location.href = 'connecter_sous_reseau.php';

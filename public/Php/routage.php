@@ -1,8 +1,9 @@
 <?php
-
-session_start();
 // Connexion à la base de données
-require_once('connecter_bd.php');
+$host = 'localhost';
+$dbname = 'BE';
+$username = 'postgres';
+$password = 'Niktwo.3111';
 
 $conn = pg_connect("host=$host dbname=$dbname user=$username password=$password");
 
@@ -12,23 +13,21 @@ if (!$conn) {
     exit;
 }
 
+// Donner au bouton les svaleurs correspondantes
+
 if (isset($_POST['submit'])) {
     $adresseIPSource = $_POST['IP_source'];
     $adresseIPDestination = $_POST['IP_destination'];
     $TTL = $_POST['TTL'];
     $DF = $_POST['DF'];
     $MF = $_POST['MF'];
-    $deplacement = $_POST['deplacement'];
     $taille = $_POST['taille'];
     $id_pc = $_POST['id_pc'];
-
-    simulerRoutage($adresseIPSource, $adresseIPDestination, $TTL, $DF, $MF, $deplacement, $taille, $id_pc);
+    simulerRoutage($adresseIPSource, $adresseIPDestination, $TTL, $DF, $MF, $taille, $id_pc);
 }
 
-
-
 // Fonction pour simuler le routage d'un paquet
-function simulerRoutage($adresseIPSource, $adresseIPDestination, $TTL, $DF, $MF, $deplacement, $taille, $id_pc) {
+function simulerRoutage($adresseIPSource, $adresseIPDestination, $TTL, $DF, $MF, $taille, $id_pc) {
     global $conn;
 
     // Liste des appareils par lesquels le paquet est passé
@@ -40,57 +39,112 @@ function simulerRoutage($adresseIPSource, $adresseIPDestination, $TTL, $DF, $MF,
         'TTL' => $TTL,  // Valeur arbitraire pour le TTL
         'DF' => $DF, // Fragmentation désactivée
         'MF' => $MF, // Fragmentation non utilisée
-        'offset' => $deplacement, // Valeur arbitraire pour le déplacement
         'taille' => $taille, // Taille arbitraire du paquet
         'id_pc'=> $id_pc // ID PC source
     );
 
-    $result = pg_query($conn, "SELECT * FROM Pc WHERE id_pc = $id_pc");
+    //Routage dans un même réseau
 
-    // Vérification du résultat
-    if (!$result) {
-        echo "Erreur lors de l'exécution de la requête.\n";
+    //Requete pour avoir le reseau du pc envoyant le paquet
+    $result = pg_query($conn, "SELECT R.*
+    FROM réseau R
+    INNER JOIN sous_réseau SR ON R.id_reseau = SR.id_reseau
+    INNER JOIN Pc P ON SR.id_sousréseau = P.id_sousréseau
+    WHERE P.id_pc = $id_pc;");
+    $resultat = pg_fetch_assoc($result);
+    // Vérification de l'éxecution de la requête
+    if (!$resultat) {
+        echo "Erreur lors de l'exécution de la requête (1.1).\n";
+        exit;
+    }
+    $reseau = $resultat;
+
+    #Verification que les deux adresses sont dans le même réseau
+    if(memeReseau($adresseIPDestination, $adresseIPSource, $reseau['mask_reseau'])){
+        #Requête pour avoir le pc de destination
+        $result = pg_query($conn, "SELECT * FROM Pc WHERE ip_pc = '$adresseIPDestination';");
+        $resultat = pg_fetch_assoc($result);
+        // Vérification de l'éxecution de la requête
+        if (!$resultat) {
+            echo "Erreur lors de l'exécution de la requête (1.2).\n";
+            exit;
+        }
+        $pc_dest = $resultat;
+        //Ajout du Pc d'origine dans la liste des appareils parcourus
+        $appareilsParcourus[] = 'PC'. $id_pc;
+        //Ajout du Pc de destination dans la liste des appareils parcourus
+        $appareilsParcourus[] = 'PC'. $pc_dest['id_pc'];
+        echo "Appareils parcourus : " . implode(', ', $appareilsParcourus) . "\n";
+        return;
+    }
+
+
+    //Pc a partir duquel le paquet à été créé
+    $result = pg_query($conn, "SELECT * FROM Pc WHERE id_pc = $id_pc");
+    $resultat = pg_fetch_assoc($result);
+
+    // Vérification de l'éxecution de la requête
+    if (!$resultat) {
+        echo "Erreur lors de l'exécution de la requête (1).\n";
         exit;
     }
 
-    $equipement = pg_fetch_assoc($result);
+    //Initialisation des variables utiles pour le routage
+    $equipement = $resultat;
     $adresseEquipement = $equipement['ip_pc'];
     $id_equipement = $equipement['id_pc'];
-    $appareilsParcourus[] = 'PC'. $id_equipement;
-    $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN (SELECT id_elements FROM elem_pc WHERE id_pc = $id_equipement);");
-    // Vérification du résultat
-    if (!$result) {
-        echo "Erreur lors de l'exécution de la requête.\n";
+    $isPc = 0;
+    $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN 
+    (SELECT id_elements FROM elem_pc WHERE id_pc = $id_equipement);");
+    $resultat = pg_fetch_all($result);
+    // Vérification de l'éxecution de la requête
+    if (!$resultat) {
+        echo "Erreur lors de l'exécution de la requête (2).\n";
         exit;
     }
-    $tableRoutage = pg_fetch_all($result);
-    $isPc = 0;
+    $tableRoutage = $resultat;
+    
+
+    //Ajout du Pc d'origine dans la liste des appareils parcourus
+    $appareilsParcourus[] = 'PC'. $id_equipement;
+
     // Boucle de routage du paquet
     while ($paquet['TTL'] > 0 and $paquet['adresse_IP_destination'] != $adresseEquipement) {
-        // Parcourir les éléments liés à l'appareil actuel
-        $prochainAppareil = 1;
+        //Initialisation variables 
+        $prochaineRoute = 1;
         $routeDefault = null;
+        // Parcourir les éléments liés à l'appareil actuel
         foreach ($tableRoutage as $element) {
+            //Attribution de la route par defaut
             if (memeReseau("127.0.0.0", $element['ip_destination'], $element['masque_destination'])){
                 $routeDefault = $element;
             }
+            //Attribution de la prochaine route
             if (memeReseau($paquet['adresse_IP_destination'], $element['ip_destination'], $element['masque_destination'])){
-                $prochainAppareil = $element;
+                $prochaineRoute = $element;
             }
         }
-        if($prochainAppareil == 1){
-            $prochainAppareil = $routeDefault;
+
+        //Attribution des données de la route par défaut
+        if($prochaineRoute == 1){
+            $prochaineRoute = $routeDefault;
+            echo "Appareils parcourus : " . implode(', ', $appareilsParcourus) . "\n";
+            // Arrêter la simulation
+            return;
         }
 
-        // Vérifier si la fragmentation est autorisée
-        if (!$paquet['DF'] and $paquet['taille']> $prochainAppareil['mtu']) {
-            echo "Fragmentation du paquet...\n" . nombrePaquetsFragmentation($paquet['taille'], $prochainAppareil['mtu']);
-            $paquet['taille'] = $prochainAppareil['mtu'];
-        } else if($paquet['DF'] and $paquet['taille']> $prochainAppareil['mtu']){
+        //Fragmentation
+
+        // Verifier que la taille du paquet dépasse celle de la MTU et qu'il peut être fragmenter
+        if (!$paquet['DF'] and $paquet['taille']> $prochaineRoute['mtu']) {
+            // Afficher en combien de paquets il est fragmenté et changé sa taille
+            echo "Fragmentation du paquet en " . nombrePaquetsFragmentation($paquet['taille'], $prochaineRoute['mtu'] . " paquets");
+            $paquet['taille'] = $prochaineRoute['mtu'];
+        // Verifier la taille du paquet dépasse celle de la MTU et qu'il ne peut pas être fragmenter
+        } else if($paquet['DF'] and $paquet['taille']> $prochaineRoute['mtu']){
             // Afficher les appareils parcourus et un message d'erreur
             echo "Erreur : Paquet trop grand pour la MTU de l'élément et ne peut pas être fragmenté.\n";
             echo "Appareils parcourus : " . implode(', ', $appareilsParcourus) . "\n";
-
             // Arrêter la simulation
             return;
         }
@@ -99,60 +153,101 @@ function simulerRoutage($adresseIPSource, $adresseIPDestination, $TTL, $DF, $MF,
         $paquet['TTL'] = $paquet['TTL']-1;
 
         // Passer au prochain appareil
-        $interfacePrAppareil = intval($prochainAppareil["interface_relayage"]);
+    
+        $interfacePrAppareil = intval($prochaineRoute["interface_relayage"]);
         
-        $result = pg_query($conn, "SELECT * FROM Routeur WHERE (id_routeur IN (SELECT id_routeur FROM connecter_routeur WHERE interface_routeur = $interfacePrAppareil) OR id_routeur IN (SELECT id_routeur_1 FROM connecter_routeur WHERE interface_routeur = $interfacePrAppareil)) AND id_routeur != $id_equipement;");
-        // Vérification du résultat
-        $equipement = pg_fetch_assoc($result);
-        if (!$equipement) {
+        // Requête pour avoir tous les routeurs connectés à un autre routeur sur une interface donné
+        $result = pg_query($conn, "SELECT * FROM Routeur WHERE 
+        (id_routeur IN (SELECT id_routeur FROM connecter_routeur WHERE interface_routeur = $interfacePrAppareil) 
+        OR id_routeur IN (SELECT id_routeur_1 FROM connecter_routeur WHERE interface_routeur = $interfacePrAppareil)) 
+        AND id_routeur != $id_equipement;");
+        $resultat = pg_fetch_assoc($result);
+        // Vérification de l'éxecution de la requête
+        if (!$resultat) {
+            // Verification du type de l'appareil (Pc ou Routeur)
             if($isPc){
-                $result = pg_query($conn, "SELECT * FROM Routeur WHERE id_routeur IN ( SELECT id_routeur FROM connecter_pc WHERE interface_routeur_pc = $interfacePrAppareil);");
-                $equipement = pg_fetch_assoc($result);
-                if(!$equipement){
-                    echo "Erreur lors de l'exécution de la requête.\n";
+                // Requête pour avoir tous les routeurs connectés à un pc sur une interface donné
+                $result = pg_query($conn, "SELECT * FROM Routeur WHERE id_routeur IN 
+                ( SELECT id_routeur FROM connecter_pc WHERE interface_routeur_pc = $interfacePrAppareil);");
+                $resultat = pg_fetch_assoc($result);
+                // Vérification de l'éxecution de la requête
+                if(!$resultat){
+                    echo "Erreur lors de l'exécution de la requête (3).\n";
                     exit;
                 } else {
+                    //Changement de la variable car l'équipement est maintenant un routeur
                     $isPc = 0;
                 }
             }
             else{
-                $result = pg_query($conn, "SELECT * FROM Pc WHERE id_pc IN ( SELECT id_pc FROM connecter_pc WHERE interface_routeur_pc = $interfacePrAppareil);");
-                $equipement = pg_fetch_assoc($result);
-                if(!$equipement){
-                    echo "Erreur lors de l'exécution de la requête.\n";
+                // Requête pour avoir tous les Pcs connectés à un routeur sur une interface donné
+                $result = pg_query($conn, "SELECT * FROM Pc WHERE id_pc IN 
+                ( SELECT id_pc FROM connecter_pc WHERE interface_routeur_pc = $interfacePrAppareil);");
+                $resultat = pg_fetch_assoc($result);
+                // Vérification de l'éxecution de la requête
+                if(!$resultat){
+                    echo "Erreur lors de l'exécution de la requête (4).\n";
                     exit;
                 } else {
+                    //Changement de la variable car l'équipement est maintenant un Pc
                     $isPc = 1;
                 }
 
             } 
         } else {
+            //Changement de la variable car l'équipement est maintenant un routeur
             $isPc = 0;
         }
          
+        // Verification du type de l'appareil (Pc ou Routeur)
         if($isPc) {
+            //Mise à jour des variables liés à l'equipement
             $adresseEquipement = $equipement['ip_pc'];
             $id_equipement = $equipement['id_pc'];
+            $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN 
+            (SELECT id_elements FROM elem_pc WHERE id_pc = $id_equipement);");
+            $resultat = pg_fetch_all($result);
+            //Ajout de l'équipement dans la liste des appareils parcourus
             $appareilsParcourus[] = 'PC'. $id_equipement;
-            $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN (SELECT id_elements FROM elem_pc WHERE id_pc = $id_equipement);");
         } else {    
+            //Mise à jour des variables liés à l'equipement
             $adresseEquipement = $equipement['mac'];
             $id_equipement = $equipement['id_routeur'];
+            $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN 
+            (SELECT id_elements FROM elem_routeur WHERE id_routeur = $id_equipement);");
+            $resultat = pg_fetch_all($result);
+            //Ajout de l'équipement dans la liste des appareils parcourus
             $appareilsParcourus[] = 'Routeur'. $id_equipement;
-            $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN (SELECT id_elements FROM elem_routeur WHERE id_routeur = $id_equipement);");
         }
 
         // Vérification du résultat
-        if (!$result) {
-            if(!$result){
-                echo "Erreur lors de l'exécution de la requête.\n";
-                exit;
-            } 
-        } 
-        $tableRoutage = pg_fetch_all($result);
+        if(!$resultat){
+            echo "Erreur lors de l'exécution de la requête (5).\n";
+            exit;
+        }
+        $tableRoutage = $resultat;
       }
-    // Afficher les appareils parcourus
+    
+
     echo "Appareils parcourus : " . implode(', ', $appareilsParcourus) . "\n";
+
+}
+
+function AfficherTableau($tableau) {
+    echo "<table border='1'>";
+    echo "<tr>";
+    foreach ($tableau[0] as $cle => $valeur) {
+        echo "<th>$cle</th>";
+    }
+    echo "</tr>";
+    foreach ($tableau as $ligne) {
+        echo "<tr>";
+        foreach ($ligne as $valeur) {
+            echo "<td>$valeur</td>";
+        }
+        echo "</tr>";
+    }
+    echo "</table>";
 }
     
 
@@ -188,12 +283,10 @@ function nombrePaquetsFragmentation($taillePaquet, $MTU) {
     return $nombrePaquets;
 }
 
-// Exemple d'utilisation de la fonction simulerRoutage
-//simulerRoutage('192.6.1.2', '167.2.1.1', 10, 1, 0, 0, 2500, 1);
+
 
 // Fermeture de la connexion à la base de données PostgreSQL
-
-
+pg_close($conn);
 ?>
 
 
@@ -213,43 +306,9 @@ function nombrePaquetsFragmentation($taillePaquet, $MTU) {
 
     <h2>Connection routeur - routeur</h2>
     
-    <table>
-        <tr>
-            <th>ID Routeur 1</th>
-            <th>ID Routeur 2</th>
-            <th>Mask</th>
-        </tr>
-        <?php
-        $result = pg_query($conn, "SELECT * FROM connecter_routeur");
-        $resultat = pg_fetch_all($result);
-        foreach ($resultat as $routeur) {
-            echo "<tr>";
-            echo "<td>" ."  |  ". $routeur['id_routeur_1'] ."  |  ". "</td>";
-            echo "<td>" ."  |  ". $routeur['id_routeur_2'] ."  |  ". "</td>";
-            echo "<td>" ."  |  ". $routeur['mask'] ."  |  ". "</td>";
-            echo "</tr>";
-        }
-        ?>
-    </table>
+    
     <h2>Connection routeur - pc</h2>
-    <table>
-        <tr>
-            <th>ID Routeur</th>
-            <th>ID PC</th>
-            <th>interface_routeur_pc</th>
-        </tr>
-        <?php
-        $result = pg_query($conn, "SELECT * FROM connecter_pc");
-        $resultat = pg_fetch_all($result);
-        foreach ($resultat as $routeur) {
-            echo "<tr>";
-            echo "<td>" ."  |  ". $routeur['id_routeur'] ."  |  ". "</td>";
-            echo "<td>" ."  |  ". $routeur['id_pc'] ."  |  ". "</td>";
-            echo "<td>" ."  |  ". $routeur['interface_routeur_pc'] ."  |  ". "</td>";
-            echo "</tr>";
-        }
-        ?>
-    </table>
+    
 
     <form method="post">
         <h2>Simuler routage</h2>
@@ -269,8 +328,6 @@ function nombrePaquetsFragmentation($taillePaquet, $MTU) {
         <label for="MF">MF:</label>
         <input type="text" id="MF" name="MF" required>
 
-        <label for="deplacement">Déplacement:</label>
-        <input type="text" id="deplacement" name="deplacement" required>
 
         <label for="taille">Taille:</label>
         <input type="text" id="taille" name="taille" required>
@@ -282,13 +339,12 @@ function nombrePaquetsFragmentation($taillePaquet, $MTU) {
         <button type="submit" name="submit" class="submit-button">Simuler routage</button>
         
         <button class="button" onclick="retourAuProjet()">Annuler</button>
-<script>
+
+        <script>
             function retourAuProjet() {
                 window.location.href = 'projet.php?id=<?php echo $_SESSION['idProjet']; ?>';
-                
             }
         </script>
-        
     </form>
 </body>
 </html>

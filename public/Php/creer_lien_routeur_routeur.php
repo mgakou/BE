@@ -1,49 +1,135 @@
 <?php
+   
 session_start();
 
-// Vérifiez si l'utilisateur est connecté
-if (!isset($_SESSION['id_utilisateur'])) {
-    header("Location: connexion.html");
+require_once('connecter_bd.php');
+
+$conn = pg_connect("host=$host dbname=$dbname user=$username password=$password");
+
+// Vérification de la connexion
+if (!$conn) {
+    echo "Erreur de connexion à la base de données.\n";
     exit;
 }
 
-// Paramètres de la base de données
-$host = 'localhost';
-$dbname = 'BE';
-$username = 'postgres';
-$password = 'Niktwo.3111';
-
-try {
-    $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+// Vérification de la soumission du formulaire
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    // Récupérer tous les routeurs pour les menus déroulants
-    $stmtRouteurs = $pdo->query("SELECT id_routeur, IP_Routeur FROM Routeur");
-    $routeurs = $stmtRouteurs->fetchAll(PDO::FETCH_ASSOC);
+    $id_routeur1 = $_POST['ID_Rout1'];
+    $id_routeur2 = $_POST['ID_Rout2'];
+    $interface = $_POST['Interface'];
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $idRouteur1 = $_POST['id_routeur1'];
-        $idRouteur2 = $_POST['id_routeur2'];
-        $interfaceRouteur = $_POST['interface_routeur'];
+    
+}
+  
 
-        // Insertion du nouveau lien de routeur
-        $insertStmt = $pdo->prepare("INSERT INTO connecter_routeur (id_routeur, id_routeur_1, interface_routeur) VALUES (?, ?, ?)");
-        if ($insertStmt->execute([$idRouteur1, $idRouteur2, $interfaceRouteur])) {
-            echo "<script>alert('Lien entre routeurs créé avec succès!')</script>";
-        } else {
-            echo "Échec de la création du lien: ";
+function connecter_routeur($id_routeur1, $id_routeur2, $interface){
+    global $conn;
+
+    $result = pg_query($conn, "SELECT * FROM routeur WHERE id_routeur = $id_routeur1");
+    $resultat = pg_fetch_assoc($result);
+    if(!$resultat){
+        echo "Erreur1";
+        exit();
+    }
+
+    $routeur1 = $resultat;
+    $MTU_routeur1 = $routeur1['mtu'];
+
+    $result = pg_query($conn, "SELECT * FROM routeur WHERE id_routeur = $id_routeur2");
+    $resultat = pg_fetch_assoc($result);
+    if(!$resultat){
+        echo "Erreur2";
+        exit();
+    }
+
+    $routeur2 = $resultat;
+    $MTU_routeur2 = $routeur2['mtu'];
+
+    $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN 
+    (SELECT id_elements FROM elem_routeur WHERE id_routeur = $id_routeur1);");
+    $resultat = pg_fetch_all($result);
+    if(empty($resultat)){
+        echo "Erreur3";
+        exit();
+    }
+    $TableRoutageRouteur1 = $resultat;
+
+    $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN 
+    (SELECT id_elements FROM elem_routeur WHERE id_routeur = $id_routeur2);");
+    $resultat = pg_fetch_all($result);
+    if(empty($resultat)){
+        echo "Erreur4";
+        exit();
+    }
+    $TableRoutageRouteur2 = $resultat;
+
+    $result = pg_query($conn, "INSERT INTO connecter_routeur (id_routeur, id_routeur_1, interface_routeur) VALUES ('$id_routeur1', '$id_routeur2', '$interface')");
+
+    foreach ($TableRoutageRouteur1 as $ElemRoutageRouteur1){
+        foreach($TableRoutageRouteur2 as $ElemRoutageRouteur2){
+            $ip_elem_routeur2 = $ElemRoutageRouteur2['ip_destination'];
+            $ip_elem_routeur1 = $ElemRoutageRouteur1['ip_destination'];
+            $mask_elem_routeur1 = $ElemRoutageRouteur1['masque_destination'];
+            if(!memeReseau($ip_elem_routeur1, $ip_elem_routeur2, $mask_elem_routeur1)){
+                $mask_elem_routeur2 = $ElemRoutageRouteur2['masque_destination'];
+                $result = pg_query($conn, "INSERT INTO elements (ip_destination, interface_relayage, masque_destination, MTU) VALUES ('$ip_elem_routeur2', '$interface', '$mask_elem_routeur2', $MTU_routeur1 )");
+                $result = pg_query($conn, "SELECT * FROM elements WHERE ip_destination = '$ip_elem_routeur2' AND interface_relayage = '$interface' AND masque_destination = '$mask_elem_routeur2' AND MTU = $MTU_routeur1");
+                $element = pg_fetch_assoc($result);
+                $id_element = $element['id_elements'];
+
+                $result = pg_query($conn, "INSERT INTO elem_routeur (id_routeur, id_elements) VALUES ('$id_routeur2', '$id_element' )");
+            }
         }
     }
-} catch (PDOException $e) {
-    die("Erreur de connexion à la base de données : " . $e->getMessage());
+    foreach ($TableRoutageRouteur2 as $ElemRoutageRouteur2){
+        foreach($TableRoutageRouteur1 as $ElemRoutageRouteur1){
+            $ip_elem_routeur2 = $ElemRoutageRouteur2['ip_destination'];
+            $ip_elem_routeur1 = $ElemRoutageRouteur1['ip_destination'];
+            $mask_elem_routeur1 = $ElemRoutageRouteur1['masque_destination'];
+            if(!memeReseau($ip_elem_routeur1, $ip_elem_routeur2, $mask_elem_routeur1)){
+                $mask_elem_routeur2 = $ElemRoutageRouteur2['masque_destination'];
+                $result = pg_query($conn, "INSERT INTO elements (ip_destination, interface_relayage, masque_destination, MTU) VALUES ('$ip_elem_routeur1', '$interface', '$mask_elem_routeur1', $MTU_routeur2 )");
+                $result = pg_query($conn, "SELECT * FROM elements WHERE ip_destination = '$ip_elem_routeur1' AND interface_relayage = '$interface' AND masque_destination = '$mask_elem_routeur1' AND MTU = $MTU_routeur2");
+                $element = pg_fetch_assoc($result);
+                $id_element = $element['id_elements'];
+
+                $result = pg_query($conn, "INSERT INTO elem_routeur (id_routeur, id_elements) VALUES ('$id_routeur1', '$id_element' )");
+            }
+        }
+    }
+
 }
+
+
+function memeReseau($adresse1, $adresse2, $masque) {
+    // Convertir les adresses IP en entiers sans point
+    $adresse1Int = ip2long($adresse1);
+    $adresse2Int = ip2long($adresse2);
+    $masqueInt = ip2long($masque);
+
+    // Calculer les adresses réseau pour chaque adresse IP
+    $reseau1 = $adresse1Int & $masqueInt;
+    $reseau2 = $adresse2Int & $masqueInt;
+
+    // Comparer les adresses réseau
+    if ($reseau1 == $reseau2) {
+        return 1; // Les adresses sont dans le même réseau
+    } else {
+        return 0; // Les adresses ne sont pas dans le même réseau
+    }
+}
+
+
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Créer un lien entre Routeurs</title>
-    <link rel="stylesheet" href="../Css/creer_lien_c_c.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creer lien routeur routeur</title>
+    <link rel="stylesheet" href="../Css/routeur.css">
 </head>
 <body>
     <div class="banniere">
@@ -53,38 +139,57 @@ try {
 
     <hr>
 
-    <form method="post">
-        <div class="form-group">
-        <div class="titre">
+    <div class="titre">
         
-            <h2>Connecter deux routeurs</h2>
-      
+        <h2>Connecter deux routeurs</h2>
         
-        </div>
+    </div>
+
+
+    <div class="form-container">
+        <form method="post" action="">
+            <div class="form-group">
+                <label for="ID_Rout1">ID du routeur 1 :</label>
+                <input type="text" id="ID_Rout1" name="ID_Rout1" required><br><br>
+            </div>
+            <div class="form-group">
+                <label for="ID_Rout2">ID du routeur 2 :</label>
+                <input type="text" id="ID_Rout2" name="ID_Rout2" required><br><br>
+            </div>
+
+            <div class="form-group">
+                <label for="Interface">Interface:</label>
+                <input type="text" id="Interface" name="Interface" required><br><br>
+            </div>
+            <button type="submit">Connecter les routeurs</button>
+            <button class="button" onclick="retourAuSousReseau()">Annuler</button>
+        </form>
+    </div>
+    
+    <script>
+    function retourAuSousReseau() {
+        window.location.href = 'reseau.php?id=<?php echo $idReseau; ?>';
+    }
+    </script>
         
-            <label for="id_routeur1">Routeur 1 :</label>
-            <select id="id_routeur1" name="id_routeur1" required>
-                <?php foreach ($routeurs as $routeur) {
-                    echo "<option value='{$routeur['id_routeur']}'>{$routeur['IP_Routeur']}</option>";
-                } ?>
-            </select>
-        </div>
+    </div>
 
-        <div class="form-container">
-            <label for="id_routeur2">Routeur 2 :</label>
-            <select id="id_routeur2" name="id_routeur2" required>
-                <?php foreach ($routeurs as $routeur) {
-                    echo "<option value='{$routeur['id_routeur']}'>{$routeur['IP_Routeur']}</option>";
-                } ?>
-            </select>
-        </div>
 
-        <div class="form-group">
-            <label for="interface_routeur">Interface :</label>
-            <input type="text" id="interface_routeur" name="interface_routeur" required>
-        </div>
-
-        <button type="submit" class="submit-button">Créer Lien</button>
-    </form>
+    <table>
+        <tr>
+            <th>Id Routeur</th>
+            <th>IP Routeur</th>
+        </tr>
+        <?php
+        $result = pg_query($conn, "SELECT * FROM routeur");
+        $resultat = pg_fetch_all($result);
+        foreach ($resultat as $routeur) {
+            echo "<tr>";
+            echo "<td>" . $routeur['id_routeur'] . "</td>";
+            echo "<td>" . $routeur['ip_routeur'] . "</td>";
+            echo "</tr>";
+        }
+        ?>
+    </table>
 </body>
 </html>
