@@ -3,10 +3,7 @@ session_start();
 
 // Vérifier que les variables de session nécessaires sont définies
 if(isset($_SESSION['idReseau']) && isset($_SESSION['id_utilisateur'])) {
-    $host = 'localhost';  // ou autre adresse IP ou nom d'hôte
-    $dbname = 'BE';
-    $username = 'postgres';
-    $password = 'Niktwo.3111';
+    require_once('connecter_bd.php');
 
     // Créer une instance PDO
     $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);

@@ -6,10 +6,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
     exit;
 }
 
-$host = "localhost";
-$dbname = "BE";
-$username = "postgres";
-$password = "Niktwo.3111";
+require_once('connecter_bd.php');
 
 try {
     $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);

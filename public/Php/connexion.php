@@ -2,10 +2,7 @@
 session_start();
 
 // Connexion à la base de données
-$host = "localhost";
-$dbname = "BE";
-$username = "postgres";
-$password = "Niktwo.3111";
+require_once('connecter_bd.php');
 
 try {
     $connexion = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);

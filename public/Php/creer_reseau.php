@@ -2,11 +2,7 @@
 session_start();
 require_once 'fonction_adresse.php';
 
-// Informations de connexion à la base de données
-$host = 'localhost';
-$dbname = 'BE';
-$username = 'postgres';
-$password = 'Niktwo.3111';
+require_once('connecter_bd.php');
 
 
 // Vérification de la soumission du formulaire

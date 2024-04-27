@@ -16,10 +16,7 @@ if ($idProjet <= 0) {
 }
 
 // Paramètres de connexion à la base de données
-$host = "localhost";
-$dbname = "BE";
-$username = "postgres";
-$password = "Niktwo.3111";
+require_once('connecter_bd.php');
 
 try {
     $connexion = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
@@ -59,10 +56,10 @@ try {
             window.location.href = 'creer_routeur.php?id=<?php echo $idProjet; ?>';
         }
         function connecterRouteur() {
-            window.location.href = 'creer_lien_routeur_routeur.php?id=<?php echo $idProjet; ?>';
+            window.location.href = 'accueil.php?id=<?php echo $idProjet; ?>';
         }
         function ConnecterPcRouteur() {
-            window.location.href = 'creer_lien_pc_routeur.php';
+            window.location.href = 'connecter_sous_reseau.php';
         }
     </script>
 </head>
@@ -76,18 +73,19 @@ try {
     <hr>
 
     <div class="titre">
-        <p>Informations du Projet<p>
-        
+        <h1>Projet : <?php echo htmlspecialchars($projet['nom']); ?></h1>
     </div>
+
     <div class="button-container">
-    <button class="button" id="supprimer-projet" onclick="supprimerProjet(<?php echo $idProjet; ?>)">Supprimer Projet</button>
-    <button class="button" id="visualiser-projet" onclick="window.location.href='visualiser_projet.php?id=<?php echo $idProjet; ?>'">Visualiser Projet</button>
-    <button class="button" id="ouvrir-reseau" onclick="document.getElementById('modal-ouvrir-reseau').style.display='block'">Ouvrir Réseau</button>
-    <button class="button" id="creer-reseau" onclick="document.getElementById('modal-creer-reseau').style.display='block'">Créer Nouveau Réseau</button>
-    <button class="button" onclick="ajouterRouteur()">Ajouter Routeur</button>
-    <button class="button" onclick="connecterRouteur()">Connecter un Routeur à un Routeur</button>
-    <button class="button" onclick="ConnecterPcRouteur()">Connecter un Pc à un Routeur</button>
-    <button class="button" id="retour-accueil" onclick="window.location.href='accueil.php'">Retour à l'accueil</button>
+        <button class="button" id="supprimer-projet" onclick="supprimerProjet(<?php echo $idProjet; ?>)">Supprimer Projet</button>
+        <button class="button" id="visualiser-projet" onclick="window.location.href='visualiser_projet.php?id=<?php echo $idProjet; ?>'">Visualiser Projet</button>
+        <button class="button" id="simuler-routage" onclick="window.location.href='routage.php?id=<?php echo $idProjet; ?>'">Simuler Routage</button>
+        <button class="button" id="ouvrir-reseau" onclick="document.getElementById('modal-ouvrir-reseau').style.display='block'">Ouvrir Réseau</button>
+        <button class="button" id="creer-reseau" onclick="document.getElementById('modal-creer-reseau').style.display='block'">Créer Nouveau Réseau</button>
+        <button class="button" id="ajouter-routeur" onclick="ajouterRouteur()">Ajouter Routeur</button>
+        <button class="button" id="connecter-routeur" onclick="connecterRouteur()">Connecter un Routeur à un Routeur</button>
+        <button class="button" id="connecter-pc"onclick="ConnecterPcRouteur()">Connecter un Sous-Réseaux à un Routeur</button>
+        <button class="button" id="retour-accueil" onclick="window.location.href='accueil.php'">Retour à l'accueil</button>
     </div>
 
 

@@ -1,9 +1,7 @@
 <?php
+session_start();
 // Paramètres de connexion à la base de données
-$host = 'localhost';
-$dbname = 'BE';
-$username = 'postgres';
-$password = 'Niktwo.3111';
+require_once('connecter_bd.php');
 
 // Création de la chaîne de connexion
 $connectionString = "host=$host dbname=$dbname user=$username password=$password";
@@ -18,8 +16,14 @@ if (!$conn) {
     exit;
 }
 
-// Si la connexion réussit, afficher un message de succès
-echo "Connexion à la base de données réussie !";
+
+if (isset($_POST['submit'])) {
+    $id_sous_reseau = $_POST['id_sous_reseau'];
+    $id_routeur = $_POST['id_routeur'];
+    $interface = $_POST['interface'];
+    connecter_reseau($id_sous_reseau, $id_routeur, $interface);
+}
+
 
 
 
@@ -146,5 +150,112 @@ function memeReseau($adresse1, $adresse2, $masque) {
     }
 }
 
-connecter_reseau(2,1,10);
 ?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connecter PC et Routeur</title>
+    <link rel="stylesheet" href="../Css/creer_lien_c_c.css">
+</head>
+<body>
+    <div class="banniere">
+        <img src="../Image/logo.jpeg" alt="logo" class="logo">
+        <p>Net-Simulate</p>
+    </div>
+    <hr>
+
+    <!-- Affichage des sous-réseaux -->
+    <h2>Sous-réseaux disponibles</h2>
+    
+    <table>
+        <tr>
+            <th>ID Sous-réseau</th>
+            <th>IP Sous-réseau</th>
+            <th>Mask</th>
+        </tr>
+        <?php
+        $result = pg_query($conn, "SELECT * FROM sous_réseau");
+        $resultat = pg_fetch_all($result);
+        foreach ($resultat as $sous_reseau) {
+            echo "<tr>";
+            echo "<td>" ."  |  ". $sous_reseau['id_sousréseau'] ."  |  ". "</td>";
+            echo "<td>" ."  |  ". $sous_reseau['ip_sous_reseau'] ."  |  ". "</td>";
+            echo "<td>" ."  |  ". $sous_reseau['mask'] ."  |  ". "</td>";
+            echo "</tr>";
+        }
+        ?>
+    </table>
+    
+    <table>
+        <tr>
+            <th>ID PC</th>
+            <th>IP PC</th>
+            <th>ID Sous-réseau</th>
+       
+        </tr>
+        <?php
+        $result = pg_query($conn, "SELECT * FROM Pc");
+        $resultat = pg_fetch_all($result);
+        foreach ($resultat as $Pc) {
+            echo "<tr>";
+            
+            echo "<td>" ."  |  ". $Pc['id_pc'] ."  |  ". "</td>";
+          
+            echo ".<td>" ."  |  ". $Pc['ip_pc'] ."  |  ". "</td>";
+
+            echo ".<td>" ."  |  ". $Pc['id_sousréseau'] ."  |  ". "</td>";
+         
+
+            echo "</tr>";
+        }
+        ?>
+    </table>
+    <table>
+        <tr>
+            <th>ID Routeur</th>
+            <th>IP Routeur</th>
+            <th>MTU</th>
+        </tr>
+        <?php
+        $result = pg_query($conn, "SELECT * FROM Routeur");
+        $resultat = pg_fetch_all($result);
+        foreach ($resultat as $routeur) {
+            echo "<tr>";
+            echo "<td>" ."  |  ". $routeur['id_routeur'] ."  |  ". "</td>";
+            echo "<td>" ."  |  ". $routeur['ip_routeur'] ."  |  ". "</td>";
+            echo "<td>" ."  |  ". $routeur['mtu'] ."  |  ". "</td>";
+            echo "</tr>";
+        }
+        ?>
+    </table>
+
+    
+
+  
+    <form method="post">
+        <h2>Connecter un PC à un routeur</h2>
+        
+        <label for="id_sous_reseau">ID Sous-réseau :</label>
+        <input type="text" id="id_sous_reseau" name="id_sous_reseau" required>
+
+        <label for="id_routeur">ID Routeur :</label>
+        <input type="text" id="id_routeur" name="id_routeur" required>
+
+        <label for="interface">Interface :</label>
+        <input type="text" id="interface" name="interface" required>
+        
+        <button type="submit" name="submit" class="submit-button">Créer Lien</button>
+        
+        <button class="button" onclick="retourAuProjet()">Annuler</button>
+<script>
+            function retourAuProjet() {
+                window.location.href = 'projet.php?id=<?php echo $_SESSION['idProjet']; ?>';
+                
+            }
+        </script>
+        
+    </form>
+</body>
+</html>

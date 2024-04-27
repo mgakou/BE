@@ -16,10 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $idUtilisateur = $_SESSION['id_utilisateur']; // Récupérer l'ID de l'utilisateur connecté
 
         // Paramètres de connexion à la base de données
-        $host = "localhost";
-        $dbname = "BE";
-        $username = "postgres";
-        $password = "Niktwo.3111";
+        require_once('connecter_bd.php');
 
         try {
             // Connexion à la base de données

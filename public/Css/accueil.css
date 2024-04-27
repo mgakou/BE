@@ -2,9 +2,9 @@
 #a-propos {background-color: rgb(101, 157, 221);}
 #ouvrir-projet {background-color: rgb(236, 247, 81);}
 #creer-projet {background-color: rgb(253, 42, 42);}
+#creer-projet {background-color: rgb(253, 42, 42);}
 
-#supprimer-projet {background-color: rgb(242, 13, 13);}
-
+ 
 
 .banniere {
     background-color: white;
@@ -125,59 +125,6 @@ body {
     padding: 20px;
 }
 
-/* Style pour le bouton de menu déroulant */
-.dropbtn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-}
-
-/* Conteneur du menu déroulant */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-/* Contenu du menu déroulant */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-}
-
-/* Les boutons à l'intérieur du menu déroulant */
-.dropdown-content button {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    background: none;
-    border: none;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-}
-
-.dropdown-content button:hover {
-    background-color: #f1f1f1;
-}
-
-/* Montrer le menu déroulant au survol */
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown:hover .dropbtn {
-    background-color: #3e8e41;
-}
-
-
 
 
 body {
@@ -296,3 +243,10 @@ hr {
     cursor: pointer;
 }
 
+.table {
+    /* Centrage horizontal de la table */
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    width: 80%; /* Largeur de la table, ajustable selon les besoins */
+  }

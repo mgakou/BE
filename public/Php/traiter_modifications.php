@@ -10,10 +10,7 @@ $userId = $_SESSION['id_utilisateur'];
 $email = $_POST['pseudo'] ?? null; // Changé pour correspondre à l'input
 $newPassword = $_POST['motdepasse'] ?? null; // Changé pour éviter le conflit
 
-$host = "localhost";
-$dbname = "BE";
-$dbUser = "postgres"; // Changé pour éviter le conflit
-$dbPassword = "Niktwo.3111"; // Changé pour éviter le conflit
+require_once('connecter_bd.php');
 
 try {
     $connexion = new PDO("pgsql:host=$host;dbname=$dbname", $dbUser, $dbPassword);

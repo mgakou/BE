@@ -16,6 +16,7 @@ CREATE TABLE Infrastructure(
 CREATE TABLE réseau(
    id_reseau SERIAL,
    nom VARCHAR(255),
+   MTU INT NOT NULL,
    mask_reseau VARCHAR(255) NOT NULL,
    adresse_réseau VARCHAR(255),
    id_infrastructure INT NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE sous_réseau(
 );
 
 CREATE TABLE Pc(
-   id_pc INT,
+   id_pc SERIAL,
    IP_Pc VARCHAR(255),
    id_sousréseau INT NOT NULL,
    PRIMARY KEY(id_pc),
@@ -41,22 +42,23 @@ CREATE TABLE Pc(
 );
 
 CREATE TABLE Routeur(
-   id_routeur INT,
+   id_routeur SERIAL,
    IP_Routeur VARCHAR(255) NOT NULL,
+   MTU INT,
    PRIMARY KEY(id_routeur)
 );
 
 CREATE TABLE Elements(
-   id_elements INT,
+   id_elements SERIAL,
    IP_destination VARCHAR(255),
-   interface_relayage VARCHAR(255),
+   interface_relayage INT NOT NULL,
    masque_destination VARCHAR(255),
    MTU INT,
    PRIMARY KEY(id_elements)
 );
 
 CREATE TABLE Paquet(
-   Id_Paquet INT,
+   Id_Paquet SERIAL,
    adresse_IP_source VARCHAR(255),
    adresse_IP_destination VARCHAR(255),
    TTL INT,
@@ -72,7 +74,7 @@ CREATE TABLE Paquet(
 CREATE TABLE connecter_pc(
    id_pc INT,
    id_routeur INT,
-   interface_routeur_pc VARCHAR(255) NOT NULL,
+   interface_routeur_pc INT NOT NULL,
    PRIMARY KEY(id_pc, id_routeur),
    FOREIGN KEY(id_pc) REFERENCES Pc(id_pc),
    FOREIGN KEY(id_routeur) REFERENCES Routeur(id_routeur)
@@ -97,7 +99,8 @@ CREATE TABLE elem_pc(
 CREATE TABLE connecter_routeur(
    id_routeur INT,
    id_routeur_1 INT,
-   interface_routeur VARCHAR(255),
+   interface_routeur INT,
    PRIMARY KEY(id_routeur, id_routeur_1),
    FOREIGN KEY(id_routeur) REFERENCES Routeur(id_routeur),
    FOREIGN KEY(id_routeur_1) REFERENCES Routeur(id_routeur)
+);

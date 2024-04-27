@@ -12,10 +12,7 @@ if ($idSousReseau <= 0) {
     exit;
 }
 
-$host = 'localhost';
-$dbname = 'BE';
-$username = 'postgres';
-$password = 'Niktwo.3111';
+require_once('connecter_bd.php');
 
 try {
     $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
@@ -56,11 +53,12 @@ $_SESSION['ipsousreseau'] = $sousReseau['ip_sous_reseau'];
             window.location.href = 'creer_pc.php?id=<?php echo $idSousReseau; ?>';
         }
 
-        function creer_lien_pc_routeur() {
-            window.location.href = 'creer_lien_pc_routeur.php?id=<?php echo $idSousReseau; ?>';
-        }
         function retourAuReseau() {
             window.location.href = 'reseau.php?id=<?php echo $sousReseau['id_reseau']; ?>';
+        }
+        
+        function supprimerPc() {
+            window.location.href = 'supprimer_pc.php?id=<?php echo $idSousReseau; ?>';
         }
         
     </script>
@@ -74,14 +72,14 @@ $_SESSION['ipsousreseau'] = $sousReseau['ip_sous_reseau'];
     <hr>
 
     <div class="titre">
-        <h1>Informations du Sous-Réseau : <?php echo htmlspecialchars($_SESSION['ipsousreseau']); ?></h1>
+        <h1>Sous-Réseau :
     </div>
 
     <div class="button-container">
         <button class="button" onclick="supprimerSousReseau()">Supprimer Sous-Réseau</button>
         <button class="button" onclick="visualiserSousReseau()">Visualiser Sous-Réseau</button>
         <button class="button" onclick="ajouterPc()">Ajouter PC</button>
-        <button class="button" onclick="creer_lien_pc_routeur()">Connecter un PC à un Routeur</button>
+        <button class="button" onclick="supprimerPc()">Supprimer PC</button>
         <button class="button" onclick="retourAuReseau()">Retour au Réseau</button>
     </div>
     

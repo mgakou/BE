@@ -14,12 +14,8 @@ if ($idSousReseau <= 0) {
     exit;
 }
 
-// Paramètres de la base de données
-$host = 'localhost';
-$dbname = 'BE';
-$username = 'postgres';
-$password = 'Niktwo.3111';
 
+require_once('connecter_bd.php');
 try {
     $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     $stmt = $pdo->prepare("SELECT * FROM sous_réseau WHERE id_sousréseau = :idSousReseau");
@@ -88,10 +84,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="form-group">
                 <button type="submit" class="submit-button">Ajouter PC</button>
-                <a href="../PHP/accueil.php" type="button" class="cancel-button">Annuler</a>
+                <button class="button" onclick="retourAuSousReseau()">Annuler</button>
             </div>   
         </form>
-        
+    </div>
+    
+    <script>
+    function retourAuSousReseau() {
+        window.location.href = 'sous_reseau.php?id=<?php echo $idSousReseau; ?>';
+    }
+    </script>
         
     </div>
 </body>

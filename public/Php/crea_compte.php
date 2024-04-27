@@ -1,12 +1,6 @@
 <?php
-//Download Xamp et lancer Apache
-// Aller dans le fichier php.ini et décommenter la ligne extension=pgsql
-// Connexion à la base de données http://localhost/BE/public/connexion.html
-// Remplir ici vos infos postgres de connexion
-$host = "localhost";
-$dbname = "BE";
-$username = "postgres";
-$password = "Niktwo.3111"; // Modifier avec votre mot de passe réel
+
+require_once('connecter_bd.php');
 
 try {
     $dbco = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);

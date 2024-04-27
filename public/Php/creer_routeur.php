@@ -3,10 +3,8 @@ session_start();
 
 // Vérifiez que les variables de session nécessaires sont définies
 if (isset($_SESSION['idProjet']) && isset($_SESSION['id_utilisateur'])) {
-    $host = 'localhost';
-    $dbname = 'BE';
-    $username = 'postgres';
-    $password = 'Niktwo.3111';
+    
+    require_once('connecter_bd.php');
 
     // Créer une instance PDO
     $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
@@ -40,7 +38,7 @@ if (isset($_SESSION['idProjet']) && isset($_SESSION['id_utilisateur'])) {
     // Fermeture de la connexion
     $pdo = null;
 
-
+   
 ?>
 
     <!DOCTYPE html>
@@ -71,7 +69,7 @@ if (isset($_SESSION['idProjet']) && isset($_SESSION['id_utilisateur'])) {
         <div class="form-group">
             <button type="submit" class="submit-button">Ajouter Routeur</button>
         
-            <a href="../PHP/projet.php" type="button" class="cancel-button">Annuler</a>
+            <button class="button" onclick="retourAuProjet()">Annuler</button>
 
             <?php if ($message != "") : ?>
                 <div class="form-message">
@@ -79,6 +77,13 @@ if (isset($_SESSION['idProjet']) && isset($_SESSION['id_utilisateur'])) {
 
             </div>
             <?php endif; ?>
+    
+    <script>
+    function retourAuProjet() {
+        window.location.href = 'projet.php?id=<?php echo $_SESSION['idProjet']; ?>';
+    }
+    </script>
+
 
         </div>
 </form>

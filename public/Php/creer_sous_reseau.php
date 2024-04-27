@@ -3,11 +3,7 @@ session_start();
 require_once 'fonction_adresse.php';  
 
 
-$host = 'localhost';
-$dbname = 'BE';
-$username = 'postgres';
-$password = 'Niktwo.3111';
-
+require_once('connecter_bd.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {

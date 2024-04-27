@@ -15,11 +15,8 @@ if ($idReseau <= 0) {
     exit;
 }
 
-// Paramètres de connexion à la base de données
-$host = "localhost";
-$dbname = "BE";
-$username = "postgres";
-$password = "Niktwo.3111";
+
+require_once('connecter_bd.php');
 
 try {
     $connexion = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
@@ -67,12 +64,12 @@ try {
     <hr>
 
     <div class="titre">
-        <p>Informations du Réseau</p>
+        <h1>Réseau : <?php echo htmlspecialchars($_SESSION['idReseau']); ?>
     </div>
 
     <div class="button-container">
         <button class="button" id="supprimer-reseau" onclick="supprimerReseau(<?php echo $idReseau; ?>)">Supprimer Réseau</button>
-        <button class="button" id="Connecter réseau - routeur" onclick="window.location.href='connecter_reseau.php?id=<?php echo $idReseau; ?>'">Connecter_reseau</button>
+        <button class="button" id="Connecter réseau - routeur" onclick="window.location.href='connecter_reseau.php?id=<?php echo $idReseau; ?>'">Connecter un réseau à un routeur</button>
         <button class="button" id="ouvrir-sous-reseau" onclick="document.getElementById('modal-ouvrir-sous-reseau').style.display='block'">Ouvrir Sous Réseau</button>
         <button class="button" id="ajouter-sous-reseau" onclick="document.getElementById('modal-ajouter-sous-reseau').style.display='block'">Ajouter Sous-Réseau</button>
         <button class="button" id="retour-projet" onclick="window.location.href='projet.php?id=<?php echo $_SESSION['idProjet']; ?>'">Retour au Projet</button>

@@ -23,14 +23,9 @@
         <button class="button" id="modifier-info" onclick="window.location.href='../PHP/modifier_infos.php';">Modifier informations compte</button>
         <button class="button" id="ouvrir-projet">Ouvrir projet</button>
         <button class="button" id="creer-projet" onclick="document.getElementById('modal-projet').style.display='block'">Créer nouveau projet</button>
-        <button class="button" onclick="window.location.href='../Php/deconnexion.php'">Déconnexion</button>
+        <button class="button" id="Deconnexion" onclick="window.location.href='../Php/deconnexion.php'">Déconnexion</button>
     </div>
     
-    <!-- Encadré pour les informations de compte -->
-    <div class="info-compte">
-        <h3>Informations de compte</h3>
-    </div>
-
     <!-- Modal pour la création d'un nouveau projet -->
     <div id="modal-projet" class="modal">
         <div class="modal-content">
@@ -49,7 +44,7 @@
             <span class="close" onclick="document.getElementById('modal-projets').style.display='none'">&times;</span>
             <h2>Choisir un projet</h2>
             <div id="liste-projets-modal">
-                <!-- Les projets seront ajoutés ici dynamiquement -->
+        
             </div>
         </div>
     </div>
