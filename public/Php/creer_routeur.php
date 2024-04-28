@@ -35,6 +35,8 @@ if (isset($_SESSION['idProjet']) && isset($_SESSION['id_utilisateur'])) {
         $insertStmt = null;
     }
 
+    
+
     // Fermeture de la connexion
     $pdo = null;
 

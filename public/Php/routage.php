@@ -92,7 +92,9 @@ function simulerRoutage($adresseIPSource, $adresseIPDestination, $TTL, $DF, $MF,
     //Initialisation des variables utiles pour le routage
     $equipement = $resultat;
     $adresseEquipement = $equipement['ip_pc'];
+    echo $adresseEquipement;
     $id_equipement = $equipement['id_pc'];
+    echo $id_equipement;
     $isPc = 0;
     $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN 
     (SELECT id_elements FROM elem_pc WHERE id_pc = $id_equipement);");

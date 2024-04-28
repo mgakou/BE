@@ -61,7 +61,7 @@ h2 {
 }
 
 .cancel-button {
-    background-color: #4b95b3; /* Rouge pour le bouton annuler */
+    background-color: #4b95b3; 
     color: white;
     padding: 10px 20px;
     border: none;
@@ -72,5 +72,5 @@ h2 {
 }
 
 .cancel-button:hover {
-background-color: #a73234; /* Un rouge plus foncé pour l'effet hover */
+background-color: #a73234; 
 }

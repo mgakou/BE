@@ -1,15 +1,17 @@
 <?php
+/* Début de la session, cela permet de récupérer les variables de session */
 session_start();
-// Paramètres de connexion à la base de données
+
+/* Connexion à la BD */
 require_once('connecter_bd.php');
 
-// Création de la chaîne de connexion
-$connectionString = "host=$host dbname=$dbname user=$username password=$password";
+/* Création d'une chaine de connexion, qui permet de se connecter à la BD */
+$connexion_chain= "host=$host dbname=$bdnom user=$utilisateur password=$mdp";
 
-// Tentative de connexion à la base de données PostgreSQL
-$conn = pg_connect($connectionString);
+/*apelle de la focntion pg_connect, cela permet de d'utiliser la chaine de connexion pour s'identifier à la bd */
+$conn = pg_connect($connexion_chain);
 
-// Vérification de la connexion
+/* Verification si la connexion est établie ou à échouée */
 if (!$conn) {
     // Si la connexion échoue, afficher l'erreur
     echo "Erreur de connexion à la base de données: " . pg_last_error();
@@ -17,7 +19,7 @@ if (!$conn) {
 }
 
 
-
+/* Vérification de l'entrée utilisateur des champs de connexion */
 if (isset($_POST['submit'])) {
     $id_reseau = $_POST['id_reseau'];
     $id_routeur = $_POST['id_routeur'];
@@ -26,16 +28,18 @@ if (isset($_POST['submit'])) {
 }
 
 
-
+/* Fonction de connexion d'un réseau à un routeur */
 function connecter_reseau($id_reseau, $id_routeur, $interface){
     global $conn;
 
+    /* Recuperation des infos du réseau et du routeur */
     $result = pg_query($conn, "SELECT * FROM réseau WHERE id_reseau = $id_reseau");
     $resultat = pg_fetch_assoc($result);
     if(!$resultat){
         echo "Erreur1";
         exit();
     }
+
 
     $reseau = $resultat;
     $ip_reseau = $reseau["adresse_réseau"];
@@ -48,13 +52,13 @@ function connecter_reseau($id_reseau, $id_routeur, $interface){
         echo "Erreur2";
         exit();
     }
-
+    
     $routeur = $resultat;
     $MTU_routeur = $routeur['mtu'];
-
+    /* Insertion des infos du réseau dans la table elements */
     $result = pg_query($conn, "INSERT INTO elements (ip_destination, interface_relayage, masque_destination, mtu) VALUES ('$ip_reseau', '$interface', '$mask_reseau', $MTU_reseau )");
     
-
+    /* Recuperation de l'id de l'element */
     $result = pg_query($conn, "SELECT * FROM elements WHERE ip_destination = '$ip_reseau' AND interface_relayage = '$interface' AND masque_destination = '$mask_reseau' AND MTU = $MTU_reseau");
     $element = pg_fetch_assoc($result);
     $id_element = $element['id_elements'];
@@ -62,17 +66,20 @@ function connecter_reseau($id_reseau, $id_routeur, $interface){
     $result = pg_query($conn, "INSERT INTO elem_routeur (id_routeur, id_elements) VALUES ('$id_routeur', '$id_element' )");
     $resultat = pg_fetch_assoc($result);
   
+    /* Recuperation des pc du réseau */
     $result = pg_query($conn, "SELECT * FROM Pc
     JOIN sous_réseau ON Pc.id_sousréseau = sous_réseau.id_sousréseau
     JOIN réseau ON sous_réseau.id_reseau = réseau.id_reseau
     WHERE réseau.id_reseau = '$id_reseau';
     ");
     $resultat = pg_fetch_all($result);
-
+    
     if(!$resultat[0]){
         echo "Erreur3";
         exit();
     }
+   
+    /* Insertion des informations contenu dans les pc dans la table elements */
     $liste_pc = $resultat;
     $result = pg_query($conn, "SELECT * FROM Elements WHERE id_elements IN 
     (SELECT id_elements FROM elem_routeur WHERE id_routeur = $id_routeur);");
@@ -81,6 +88,7 @@ function connecter_reseau($id_reseau, $id_routeur, $interface){
         echo "Erreur4";
         exit();
     }
+   
     $TableRoutageRouteur = $resultat;
     foreach($liste_pc as $pc){
         $id_pc = $pc['id_pc'];
@@ -121,6 +129,7 @@ function connecter_reseau($id_reseau, $id_routeur, $interface){
     }
 }
 
+/* fonction de vérifications des adresses IP avec la bonne numenclature */
 function memeReseau($adresse1, $adresse2, $masque) {
     // Convertir les adresses IP en entiers sans point
     $adresse1Int = ip2long($adresse1);
@@ -142,7 +151,7 @@ function memeReseau($adresse1, $adresse2, $masque) {
 ?>
 
 
-
+// Front end avec champs : ID Réseau, ID Routeur, Interface
 <!DOCTYPE html>
 <html lang="fr">
 <head>

@@ -17,14 +17,14 @@
     text-align: center;
 }
 
-/* Réinitialisation de certains styles par défaut du navigateur */
+
 body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
 }
 
-/* Style du logo */
+
 .logo {
     position: absolute;
     left: 20px;
@@ -32,14 +32,14 @@ body {
     height: 100px;
 }
 
-/* Style pour la barre horizontale */
+
 hr {
     margin: 0;
     border: none;
     border-top: 3px solid #2E7590;
 }
 
-/* Styles pour les titres dans la page */
+
 .titre {
     text-align: center;
     font-family: Roboto;
@@ -48,7 +48,7 @@ hr {
 
 }
 
-/* Container principal du formulaire */
+
 .form-container {
     justify-content: center;
     display: flex;
@@ -62,13 +62,13 @@ hr {
     border: 2px solid #2E7590;
 }
 
-/* Style des éléments de formulaire */
+
 .form-group {
     margin-bottom: 20px;
     width: 80%;
 }
 
-/* Style des inputs et selects */
+
 input[type="text"], select {
     width: 100%;
     padding: 10px;
@@ -77,7 +77,7 @@ input[type="text"], select {
     border-radius: 5px;
 }
 
-/* Boutons */
+
 button, .cancel-button {
     background-color: #4b95b3;
     color: white;
@@ -90,7 +90,7 @@ button, .cancel-button {
     text-align: center;
 }
 
-/* Hover effect pour le bouton annuler */
+
 .cancel-button:hover {
     background-color: #a73234;
 }

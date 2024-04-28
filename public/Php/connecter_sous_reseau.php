@@ -1,22 +1,24 @@
 <?php
+/* Début de la session, cela permet de récupérer les variables de session */
 session_start();
-// Paramètres de connexion à la base de données
+
+/* Connexion à la BD */
 require_once('connecter_bd.php');
 
-// Création de la chaîne de connexion
+/* Création d'une chaine de connexion, qui permet de se connecter à la BD */
 $connectionString = "host=$host dbname=$dbname user=$username password=$password";
 
-// Tentative de connexion à la base de données PostgreSQL
+/*apelle de la focntion pg_connect, cela permet de d'utiliser la chaine de connexion pour s'identifier à la bd */
 $conn = pg_connect($connectionString);
 
-// Vérification de la connexion
+/* Verification si la connexion est établie ou à échouée */
 if (!$conn) {
     // Si la connexion échoue, afficher l'erreur
     echo "Erreur de connexion à la base de données: " . pg_last_error();
     exit;
 }
 
-
+/* Vérification de l'entrée utilisateur des champs de connexion */
 if (isset($_POST['submit'])) {
     $id_sous_reseau = $_POST['id_sous_reseau'];
     $id_routeur = $_POST['id_routeur'];
@@ -28,6 +30,8 @@ if (isset($_POST['submit'])) {
 
 
 
+
+/* Fonction de connexion d'un réseau à un routeur */
 function connecter_reseau($id_sous_reseau, $id_routeur, $interface){
     global $conn;
 
@@ -38,23 +42,25 @@ function connecter_reseau($id_sous_reseau, $id_routeur, $interface){
         exit();
     }
 
+    /* Recuperation des informations du réseau et des informations du routeur */
     $sous_reseau = $resultat;
     $ip_sous_reseau = $sous_reseau["ip_sous_reseau"];
     $mask_sous_reseau = $sous_reseau["mask"];
     
+    /* Recuperation des informations du réseau et des informations du routeur */
     $result = pg_query($conn, "SELECT * FROM réseau
     WHERE id_reseau IN (
         SELECT id_reseau FROM sous_réseau
         WHERE id_sousréseau = $id_sous_reseau
 
     )");
-
+    
     $resultat = pg_fetch_assoc($result);
     if(!$resultat){
         echo "Erreur MTU";
         exit();
     }
-
+    
     $MTU_sous_reseau = $resultat['mtu'];
     $result = pg_query($conn, "SELECT * FROM routeur WHERE id_routeur = $id_routeur");
     $resultat = pg_fetch_assoc($result);
@@ -66,9 +72,10 @@ function connecter_reseau($id_sous_reseau, $id_routeur, $interface){
     $routeur = $resultat;
     $MTU_routeur = $routeur['mtu'];
 
+    /* Insertion des informations du réseau dans la table  des elements */
     $result = pg_query($conn, "INSERT INTO elements (ip_destination, interface_relayage, masque_destination, mtu) VALUES ('$ip_sous_reseau', '$interface', '$mask_sous_reseau', $MTU_sous_reseau)");
     
-
+    /* Recuperation de l'id de l'element */
     $result = pg_query($conn, "SELECT * FROM elements WHERE ip_destination = '$ip_sous_reseau' AND interface_relayage = '$interface' AND masque_destination = '$mask_sous_reseau' AND MTU = $MTU_sous_reseau");
     $element = pg_fetch_assoc($result);
     $id_element = $element['id_elements'];
@@ -77,6 +84,8 @@ function connecter_reseau($id_sous_reseau, $id_routeur, $interface){
     $resultat = pg_fetch_all($result);
 
     $result = pg_query($conn, "SELECT Pc.* FROM Pc
+
+    /* Creation du lien entre la table Pc et la table sous_réseau */
     JOIN sous_réseau ON Pc.id_sousréseau = sous_réseau.id_sousréseau
     WHERE sous_réseau.id_sousréseau = $id_sous_reseau;");
     $resultat= pg_fetch_all($result);
@@ -92,6 +101,7 @@ function connecter_reseau($id_sous_reseau, $id_routeur, $interface){
         echo "Erreur4";
         exit();
     }
+    /* Insertion des informations du pc dans la table des elements */
     $TableRoutageRouteur = $resultat;
     foreach($liste_pc as $pc){
         $id_pc = $pc['id_pc'];
@@ -107,6 +117,7 @@ function connecter_reseau($id_sous_reseau, $id_routeur, $interface){
             exit();
         }
         $TableRoutagePc = $resultat;
+        /* Boucle d'insertion des informations du pc dans la table des elements */
         foreach ($TableRoutageRouteur as $ElemRoutageRouteur){
             foreach($TableRoutagePc as $ElemRoutagePc){
                 $ip_elem_routeur = $ElemRoutageRouteur['ip_destination'];
@@ -131,7 +142,7 @@ function connecter_reseau($id_sous_reseau, $id_routeur, $interface){
 
     }
 }
-
+/*Vérification de la nomemclature des adresses IP */
 function memeReseau($adresse1, $adresse2, $masque) {
     // Convertir les adresses IP en entiers sans point
     $adresse1Int = ip2long($adresse1);
@@ -151,7 +162,7 @@ function memeReseau($adresse1, $adresse2, $masque) {
 }
 
 ?>
-
+// Front end avec les champs id_sous_reseau, id_routeur et interface
 <!DOCTYPE html>
 <html lang="fr">
 <head>

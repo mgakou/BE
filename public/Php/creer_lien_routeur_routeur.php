@@ -129,7 +129,7 @@ function memeReseau($adresse1, $adresse2, $masque) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creer lien routeur routeur</title>
-    <link rel="stylesheet" href="../Css/routeur.css">
+    <link rel="stylesheet" href="../Css/modifier_informations.css">
 </head>
 <body>
     <div class="banniere">
@@ -168,7 +168,7 @@ function memeReseau($adresse1, $adresse2, $masque) {
     
     <script>
     function retourAuSousReseau() {
-        window.location.href = 'reseau.php?id=<?php echo $idReseau; ?>';
+        window.location.href = 'projet.php?id=<?php echo $_SESSION['idProjet']; ?>';
     }
     </script>
         

@@ -40,6 +40,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (AdresseIPValidePC($ip_pc, $sousReseau['ip_sous_reseau'], $sousReseau['mask'])) {
         $insertStmt = $pdo->prepare("INSERT INTO Pc (IP_Pc, id_sousréseau) VALUES (?, ?)");
         if ($insertStmt->execute([$ip_pc, $idSousReseau])) {
+            $route = $_POST['route'];
+            $Interface = $_POST['Interface'];
+            $Masque = $_POST['Masque'];
+            $MTU = $_POST['MTU'];
+            $pdo->beginTransaction();
+            $insertElement = $pdo->prepare("INSERT INTO Elements (IP_destination, interface_relayage, masque_destination, MTU) VALUES (?, ?, ?, ?)");
+            $insertElement->execute([$route, $Interface, $Masque, $MTU]);
+            $idElement = $pdo->lastInsertId();
+            $insertElemPc = $pdo->prepare("INSERT INTO elem_pc (id_pc, id_elements) VALUES (?, ?)");
+            $insertElemPc->execute([$idSousReseau, $idElement]);
+            $pdo->commit();
             echo "<script>alert('PC ajouté .'); window.location.href = './sous_reseau.php?id=$idSousReseau';</script>";
         } else {
             echo "<script>alert('Erreur ajout PC .'); window.location.href = './sous_reseau.php?id=$idSousReseau';</script>";
@@ -47,6 +58,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo "<script>alert('Adresse PC non valide .'); window.location.href = './sous_reseau.php?id=$idSousReseau';</script>";
     }
+    
+    
+
+    
+
 }
 ?>
 
@@ -79,11 +95,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group">
                 <label for="ip_pc">IP du PC :</label>
                 <input type="text" id="ip_pc" name="ip_pc" required><br><br>
+                <label for="route">IP Destination :</label>
+                <input type="text" id="route" name="route" required><br><br>
+                <label for="Interface">Interface de releyage :</label>
+                <input type="text" id="Interface" name="Interface" required><br><br>
+                <label for="Masque">Masque de destination :</label>
+                <input type="text" id="Masque" name="Masque" required><br><br>
+                <label for="MTU">MTU :</label>
+                <input type="text" id="MTU" name="MTU" required><br><br>
+                
+
+
             </div>
 
 
             <div class="form-group">
                 <button type="submit" class="submit-button">Ajouter PC</button>
+           
+                
                 <button class="button" onclick="retourAuSousReseau()">Annuler</button>
             </div>   
         </form>

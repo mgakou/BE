@@ -58,8 +58,8 @@ header {
 }
 
 .logo {
-    display: flex; /* Ajout */
-    align-items: center; /* Ajout */
+    display: flex; 
+    align-items: center; 
 }
 
 .logo img {
@@ -70,8 +70,8 @@ header {
 .title {
     font-size: 24px;
     color: #2E7590;
-    text-align: center; /* Ajout */
-    flex-grow: 1; /* Ajout */
+    text-align: center; 
+    flex-grow: 1; 
 }
 
 hr {
@@ -101,7 +101,7 @@ hr {
 
 button {
     
-    background-color: #4b95b3; /* Rouge pour le bouton annuler */
+    background-color: #4b95b3; 
     color: white;
     padding: 10px 20px;
     border: none;
@@ -115,7 +115,7 @@ button {
 
 
 .cancel-button {
-    background-color: #4b95b3; /* Rouge pour le bouton annuler */
+    background-color: #4b95b3; 
     color: white;
     padding: 10px 20px;
     border: none;

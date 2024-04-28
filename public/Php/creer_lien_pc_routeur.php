@@ -1,21 +1,25 @@
 <?php
+
+/* Connexion à la base de données */
 session_start();
 
-// Vérifiez si l'utilisateur est connecté
+/* Vérification de la session */
 if (!isset($_SESSION['id_utilisateur'])) {
     header("Location: connexion.html");
     exit;
 }
 
-// Paramètres de la base de données
+/* Connexion à la base de données */
 $host = 'localhost';
 $dbname = 'BE';
 $username = 'postgres';
 $password = 'Niktwo.3111';
 
 try {
+    /* Connexion à la base de données avec creation de chaine de connexion et utilisation de PDO pour se connecter à la base de données */
     $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
+    
     $stmtPCs = $pdo->query("SELECT id_pc, IP_Pc FROM Pc");
     $pcs = $stmtPCs->fetchAll(PDO::FETCH_ASSOC);
 

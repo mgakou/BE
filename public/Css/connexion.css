@@ -13,8 +13,8 @@ header {
 }
 
 .logo {
-    display: flex; /* Ajout */
-    align-items: center; /* Ajout */
+    display: flex; 
+    align-items: center; 
 }
 
 .logo img {
@@ -25,8 +25,8 @@ header {
 .title {
     font-size: 24px;
     color: #2E7590;
-    text-align: center; /* Ajout */
-    flex-grow: 1; /* Ajout */
+    text-align: center; 
+    flex-grow: 1; 
 }
 
 hr {
@@ -43,7 +43,7 @@ hr {
 }
 .login-box {
     background-color: #ffffff;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.9); /* Ombre sur tous les côtés */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.9); 
     padding: 20px;
 }
 

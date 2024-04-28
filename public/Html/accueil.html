@@ -54,9 +54,9 @@
             var modal = document.getElementById('modal-projets');
             modal.style.display = 'block';
             fetch('../Php/liste_projet.php')
-            .then(response => response.text())  // Utilisez response.text() si le PHP renvoie du HTML
+            .then(response => response.text())  
             .then(html => {
-                document.getElementById('liste-projets-modal').innerHTML = html;  // Mettez directement le HTML dans le modal
+                document.getElementById('liste-projets-modal').innerHTML = html;  
             })
             .catch(error => {
                 console.error('Erreur lors du chargement des projets:', error);
